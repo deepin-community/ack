@@ -1,0 +1,257 @@
+Description: Reuse $ACK_TEST_STANDALONE to switch between build-/installed-time tests
+ ack's test suite originally runs twice, once for the normal version
+ (called "classic") and once for the standalone version. Since Debian
+ doesn't ship the standalone version, we don't need to test it
+ either. But instead we want installed-time tests via the autopkgtest
+ infrastructure.
+ .
+ So we change (nearly) all occurrences of the ACK_TEST_STANDALONE
+ environment variable of ack's test suite to AUTOPKGTEST_TMP and
+ switch between build-time and installed-time testing with it. Which
+ fits perfectly because -Mblib is usually not used or unset if
+ $ENV{ACK_TEST_STANDALONE} is set.
+ .
+ So we skip the test_standalone target, but pass $AUTOPKGTEST_TMP
+ instead of a hardcoded 0 to t/runtests.pl to trigger the switch. That
+ way it should even work when running "make test" after "perl
+ Makefile.PL" has run.
+Author: Axel Beckert <abe@debian.org>
+Forwarded: not-needed
+Last-Update: 2017-03-05
+
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -122,12 +122,12 @@
+ 	$(CP) $(ACK) ~/bin/ack3
+ 	$(CP) ackrc ~/.ack3rc
+ 
+-test: test_classic test_standalone
++test: test_classic
+ 
+ fulltest: test_classic test_standalone test_xt
+ 
+ test_classic: all
+-	$(FULLPERLRUN) t/runtests.pl 0 $(TEST_VERBOSE) "$(INST_LIB)" "$(INST_ARCHLIB)" $(TEST_FILES)
++	$(FULLPERLRUN) t/runtests.pl "$(AUTOPKGTEST_TMP)" $(TEST_VERBOSE) "$(INST_LIB)" "$(INST_ARCHLIB)" $(TEST_FILES)
+ 
+ test_standalone: all ack-standalone
+ 	$(FULLPERLRUN) t/runtests.pl 1 $(TEST_VERBOSE) "$(INST_LIB)" "$(INST_ARCHLIB)" $(TEST_FILES)
+--- a/t/runtests.pl
++++ b/t/runtests.pl
+@@ -10,16 +10,16 @@
+ use ExtUtils::Command::MM;
+ 
+ $ENV{PERL_DL_NONLAZY} = 1;
+-$ENV{ACK_TEST_STANDALONE} = shift;
++$ENV{AUTOPKGTEST_TMP} = shift;
+ 
+-defined($ENV{ACK_TEST_STANDALONE}) or die 'Must pass an argument to set ACK_TEST_STANDALONE';
++defined($ENV{AUTOPKGTEST_TMP}) or die 'Must pass an argument to set AUTOPKGTEST_TMP';
+ 
+ # Make sure the tests' standard input is *never* a pipe (messes with ack's filter detection).
+ open STDIN, '<', '/dev/null';
+ 
+ printf(
+-    "Running tests on %s, ACK_TEST_STANDALONE=%s\n",
+-    $ENV{ACK_TEST_STANDALONE} ? 'ack-standalone' : 'blib/script/ack',
+-    $ENV{ACK_TEST_STANDALONE}
++    "Running tests on %s, AUTOPKGTEST_TMP=%s\n",
++    $ENV{AUTOPKGTEST_TMP} ? '/usr/bin/ack' : 'blib/script/ack',
++    $ENV{AUTOPKGTEST_TMP}
+ );
+ test_harness(shift, shift, shift);
+--- a/t/Util.pm
++++ b/t/Util.pm
+@@ -180,8 +180,8 @@
+         unshift( @args, '--noenv' );
+     }
+ 
+-    if ( $ENV{'ACK_TEST_STANDALONE'} ) {
+-        unshift( @args, File::Spec->rel2abs( 'ack-standalone', $orig_wd ) );
++    if ( $ENV{'AUTOPKGTEST_TMP'} ) {
++        unshift( @args, File::Spec->rel2abs( '/usr/bin/ack', $orig_wd ) );
+     }
+     else {
+         unshift( @args, File::Spec->rel2abs( 'blib/script/ack', $orig_wd ) );
+@@ -668,7 +668,7 @@
+     my ( @command_line ) = @_;
+ 
+     return unless $ENV{ACK_OPTION_COVERAGE};
+-    return if $ENV{ACK_TEST_STANDALONE}; # We don't need to record the second time around.
++    return if $ENV{AUTOPKGTEST_TMP}; # We don't need to record the second time around.
+ 
+     my $record_options = File::Spec->catfile( $orig_wd, 'dev', 'record-options' );
+ 
+@@ -1221,7 +1221,7 @@
+ 
+     my $perl = caret_X();
+ 
+-    if ( $ENV{'ACK_TEST_STANDALONE'} ) {
++    if ( $ENV{'AUTOPKGTEST_TMP'} ) {
+         unshift( @cmd, $perl );
+     }
+     else {
+--- a/t/command-line-files.t
++++ b/t/command-line-files.t
+@@ -49,7 +49,7 @@
+ FILE_NOT_THERE: {
+     my $file = reslash( 't/swamp/perl.pod' );
+ 
+-    my $filename = $ENV{ACK_TEST_STANDALONE} ? 'ack-standalone' : 'ack';
++    my $filename = 'ack';
+     my @expected_stderr = ( "$filename: non-existent-file.txt: No such file or directory" );
+ 
+     my @expected_stdout = line_split( <<"HERE" );
+--- a/t/ack-match.t
++++ b/t/ack-match.t
+@@ -32,7 +32,7 @@
+     is_empty_array( $stdout, 'ack should return no STDOUT when piped into without a regex' );
+     cmp_ok( scalar @{$stderr}, '>', 0, 'Has to have at least one line of error message, but could have more under Appveyor' );
+ 
+-    my $name = $ENV{ACK_TEST_STANDALONE} ? 'ack-standalone' : 'ack';
++    my $name = 'ack';
+     is( $stderr->[0], "$name: No regular expression found.", 'Error message matches' );
+ };
+ 
+--- a/t/00-load.t
++++ b/t/00-load.t
+@@ -32,6 +32,9 @@
+ pass( 'All external modules loaded' );
+ 
+ diag sprintf( 'Testing ack %s under Perl v%vd, %s', $App::Ack::VERSION, $^V, $^X );
++diag sprintf( 'Debian settings: AUTOPKGTEST_TMP=%s, blibs=%s',
++              $ENV{AUTOPKGTEST_TMP} // '<undef>',
++              $ENV{AUTOPKGTEST_TMP} ? '/usr/share/perl5' : 'blib' );
+ for my $module ( @modules ) {
+     no strict 'refs';
+     my $ver = ${$module . '::VERSION'};
+@@ -40,17 +43,33 @@
+ diag( 'PATH=' . ($ENV{PATH} // '<undef>') );
+ 
+ # Find all the .pm files in blib/ and make sure they can be C<use>d.
+-my $iter = File::Next::files( { file_filter => sub { /\.pm$/ } }, 'blib' );
++my $iter = File::Next::files( { file_filter => sub { /\.pm$/ and
++                                                         $File::Next::name =~ m(/Ack[/.]) } },
++                              $ENV{AUTOPKGTEST_TMP} ? '/usr/share/perl5' : 'blib' );
+ while ( my $file = $iter->() ) {
+     $file =~ s/\.pm$// or die "There should be a .pm at the end of $file but there isn't";
+     my @dirs = File::Spec->splitdir( $file );
+ 
+     # Break apart the path, throw away blib/lib/, and reconstitute the module name.
+-    my $junk = shift @dirs;
+-    die unless $junk eq 'blib';
++    if ($ENV{AUTOPKGTEST_TMP}) {
++        my $junk = shift @dirs;
++        die unless $junk eq '';
+ 
+-    $junk = shift @dirs;
+-    die unless $junk eq 'lib';
++        $junk = shift @dirs;
++        die unless $junk eq 'usr';
++
++        $junk = shift @dirs;
++        die unless $junk eq 'share';
++
++        $junk = shift @dirs;
++        die unless $junk eq 'perl5';
++    } else {
++        my $junk = shift @dirs;
++        die unless $junk eq 'blib';
++
++        $junk = shift @dirs;
++        die unless $junk eq 'lib';
++    }
+ 
+     my $module = join( '::', @dirs );
+     $module =~ /^([a-z::]+)$/i or die "Invalid module name $module";
+--- a/t/ack-Q.t
++++ b/t/ack-Q.t
+@@ -12,7 +12,7 @@
+ 
+ prep_environment();
+ 
+-my $ACK = $ENV{ACK_TEST_STANDALONE} ? 'ack-standalone' : 'ack';
++my $ACK = $ENV{AUTOPKGTEST_TMP} ? '/usr/bin/ack' : 'ack';
+ 
+ # The unquoted "+" in "svn+ssh" will make the match fail.
+ 
+@@ -64,7 +64,7 @@
+         my ($output,$stderr) = run_ack_with_stderr( $problem );
+ 
+         is_empty_array( $output, 'No output' );
+-        is( $stderr->[0], "$ACK: Invalid regex '$problem'", 'Line 1 OK' );
++        is( $stderr->[0], "ack: Invalid regex '$problem'", 'Line 1 OK' );
+         is( $stderr->[1], "Regex: $problem", 'Line 2 OK' );
+         like( $stderr->[2], qr/\Q^---HERE $explanation/, 'Does the explanation match?' );
+         is( scalar @{$stderr}, 3, 'Only 3 lines' );
+@@ -72,7 +72,11 @@
+ 
+     for my $problem ( keys %problems ) {
+         my @results = run_ack( '-Q', $problem );
+-        cmp_ok( scalar @results, '>', 100, 'When we quote, all is happy and we get lots of results' );
++        # During autopkgtest runs less files are around, especially no
++        # build results, so the the amount of hits in ack unpacked
++        # source are lower than upstream expected. So we lower it to
++        # the half due to no build artifacts being around.
++        cmp_ok( scalar @results, '>', 50, 'When we quote, all is happy and we get lots of results' );
+     }
+ };
+ 
+--- a/t/ack-w.t
++++ b/t/ack-w.t
+@@ -11,7 +11,7 @@
+ 
+ prep_environment();
+ 
+-my $ACK = $ENV{ACK_TEST_STANDALONE} ? 'ack-standalone' : 'ack';
++my $ACK = $ENV{AUTOPKGTEST_TMP} ? '/usr/bin/ack' : 'ack';
+ 
+ Barfly->run_tests( 't/ack-w.barfly' );
+ 
+@@ -146,7 +146,7 @@
+             my ( $stdout, $stderr ) = run_ack_with_stderr( '-w', '--', $pattern, $happy );
+             is_empty_array( $stdout, 'Should have no output' );
+             is( scalar @{$stderr}, 1, 'One warning' );
+-            like( $stderr->[0], qr/$ACK: -w will not do the right thing/, 'Got the correct warning' );
++            like( $stderr->[0], qr/ack: -w will not do the right thing/, 'Got the correct warning' );
+         };
+     }
+ 
+@@ -158,7 +158,7 @@
+             my ( $stdout, $stderr ) = run_ack_with_stderr( '-w', '--', $pattern, $happy );
+             is_empty_array( $stdout, 'Should have no output' );
+             is( scalar @{$stderr}, 3, 'One warning' );
+-            like( $stderr->[0], qr/$ACK: Invalid regex '\Q$pattern'/ );
++            like( $stderr->[0], qr/ack: Invalid regex '\Q$pattern'/ );
+         };
+     }
+ };
+--- a/t/illegal-regex.t
++++ b/t/illegal-regex.t
+@@ -11,7 +11,7 @@
+ 
+ prep_environment();
+ 
+-my $ACK = $ENV{ACK_TEST_STANDALONE} ? 'ack-standalone' : 'ack';
++my $ACK = $ENV{AUTOPKGTEST_TMP} ? '/usr/bin/ack' : 'ack';
+ 
+ # This unmatched paren is fatal.
+ subtest 'Check fatal' => sub {
+@@ -20,7 +20,7 @@
+     my ($output,$stderr) = run_ack_with_stderr( '(set|get)_user_(id|(username)' );
+ 
+     my @expected = line_split( <<"HERE" );
+-$ACK: Invalid regex '(set|get)_user_(id|(username)'
++ack: Invalid regex '(set|get)_user_(id|(username)'
+ Regex: (set|get)_user_(id|(username)
+                       ^---HERE Unmatched ( in regex
+ HERE
+@@ -41,7 +41,7 @@
+     my ($output,$stderr) = run_ack_with_stderr( 'foo{' );
+ 
+     is_empty_array( $output, 'No output' );
+-    is( $stderr->[0], "$ACK: Invalid regex 'foo{'", 'Line 1 OK' );
++    is( $stderr->[0], "ack: Invalid regex 'foo{'", 'Line 1 OK' );
+     is( $stderr->[1], 'Regex: foo{', 'Line 2 OK' );
+     like( $stderr->[2], qr/\Q^---HERE Unescaped left brace/, 'The message changes between Perl versions' );
+     is( scalar @{$stderr}, 3, 'Only 3 lines' );

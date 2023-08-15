@@ -1,0 +1,12 @@
+%YAML 1.1
+---
+# https://wiki.debian.org/UpstreamMetadata
+Archive: CPAN
+Bug-Database: https://github.com/beyondgrep/ack3/issues
+Bug-Submit: https://github.com/beyondgrep/ack3/issues/new
+Changelog: https://beyondgrep.com/changes.txt
+Security-Contact: andy@petdance.com
+# FAQ URL changes with each version, so this is where the link to the FAQ is
+FAQ: https://beyondgrep.com/documentation/
+Repository: https://github.com/beyondgrep/ack3.git
+Repository-Browse: https://github.com/beyondgrep/ack3

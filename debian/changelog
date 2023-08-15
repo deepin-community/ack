@@ -1,5 +1,544 @@
-template-repository (1.0-1) unstable; urgency=medium
+ack (3.7.0-1) unstable; urgency=medium
 
-  * Initial release
+  * Import new upstream version 3.7.0.
+    + Refresh sole patch.
+    + Update copyright years in debian/copyright.
+  * Declare compliance with Debian Policy 4.6.2. (No changes needed.)
 
- -- Tsic404 <liuheng@deepin.org>  Sat, 28 Jan 2023 13:46:49 +0800
+ -- Axel Beckert <abe@debian.org>  Wed, 14 Jun 2023 23:16:01 +0200
+
+ack (3.6.0-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Remove obsolete rm_conffile maintscript entry for ack-grep 2.04-2.
+
+  [ Axel Beckert ]
+  * Import new upstream version 3.6.0.
+    + debian/copyright: Bump upstream copyright years.
+    + Refresh sole patch.
+    + Add buggy upstream test t/internals/ack-dump.t to
+      debian/tests/pkg-perl/smoke-skip. (Seems to not have been updated
+      after merging GH#324.) Fixes autopkgtest.
+  * debian/copyright: Fix syntax error in e-mail address.
+  * Add myself to debian/copyright.
+  * debian/source/lintian-overrides: Fix missing word in explanatory
+    comment.
+  * Bracketize lintian overrides.
+  * Declare compliance with Debian Policy 4.6.1. (No changes needed.)
+
+ -- Axel Beckert <abe@debian.org>  Mon, 22 Aug 2022 22:15:06 +0200
+
+ack (3.5.0-1) unstable; urgency=medium
+
+  [ Axel Beckert ]
+  * Import new upstream release 3.5.0.
+  * Add lintian overrides for multiple warnings and errors regarding
+    t/swamp/minified.min.js which is not really a minified JavaScript file
+    without source but just a file with such a name inside the test suite
+    to see if ack skips it. It's just 51 bytes long.
+  * Drop no more needed alternative dependency on libtest-simple-perl.
+  * Declare compliance with Debian Policy 4.5.1. (No changes needed.)
+
+  [ Andreas Tille ]
+  * debian/upstream/metadata: Remove duplicated entry with broken spelling.
+  * debian/upstream/metadata: Do not repeat Homepage field which is also in
+    debian/control.
+
+ -- Axel Beckert <abe@debian.org>  Sun, 15 Aug 2021 14:23:28 +0200
+
+ack (3.4.0-1) unstable; urgency=medium
+
+  [ Axel Beckert ]
+  * Add a README.source pointing out that we reuse upstream's
+    $ACK_TEST_STANDALONE switch to switch between build-time and
+    as-installed (autopkgtest) testing.
+  * Import new upstream release 3.4.0.
+  * Update lintian overrides wrt. renamed tags.
+  * Bump debhelper-compat to 13.
+
+  [ gregor herrmann ]
+  * debian/watch: use uscan version 4.
+
+ -- Axel Beckert <abe@debian.org>  Wed, 01 Jul 2020 03:25:33 +0200
+
+ack (3.3.1-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Set upstream metadata fields: Bug-Submit.
+  * Remove obsolete fields Contact, Name from debian/upstream/metadata
+    (already present in machine-readable debian/copyright).
+
+  [ cstamas ]
+  * Fix failing autopkgtest.
+  * Import new upstream version 3.3.1.
+
+  [ Axel Beckert ]
+  * Update no-standalone-test-but-autopkgtests.patch for 3.3.1.
+    + Refresh hunks where needed.
+    + Patch new tests.
+    + Lower the hit value in t/ack-Q.t as it uses the whole unpacked
+      ack source code directory as guinea pig and since build artifacts
+      are missing, the expected amount of hits for "\*" is not met during
+      autopkgtest runs.
+  * Declare compliance with Debian Policy 4.5.0. (No changes needed.)
+  * Add lintian override for repackaged-source-not-advertised.
+
+ -- Axel Beckert <abe@debian.org>  Sat, 08 Feb 2020 16:59:54 +0100
+
+ack (3.2.0-1) unstable; urgency=medium
+
+  * Import new upstream version 3.2.0.
+    + Drop debian/copyright entries for removed parrot feature.
+
+ -- Axel Beckert <abe@debian.org>  Sun, 17 Nov 2019 01:18:12 +0100
+
+ack (3.1.3-1) unstable; urgency=medium
+
+  * Import new upstream version 3.1.3.
+    + Refresh sole patch.
+  * Declare compliance with Debian Policy 4.4.1. (No changes needed.)
+
+ -- Axel Beckert <abe@debian.org>  Thu, 24 Oct 2019 01:27:19 +0200
+
+ack (3.1.1-1) unstable; urgency=medium
+
+  * Import new upstream release 3.1.1.
+    + Update versioned libfile-next-perl dependencies to >= 1.18.
+
+ -- Axel Beckert <abe@debian.org>  Sat, 07 Sep 2019 19:45:01 +0200
+
+ack (3.1.0-1) unstable; urgency=medium
+
+  * Import new upstream version 3.1.0.
+  * Add lintian override for code-referring on-purpose spelling error.
+
+ -- Axel Beckert <abe@debian.org>  Sat, 31 Aug 2019 18:32:12 +0200
+
+ack (3.0.2-1) unstable; urgency=low
+
+  * Update d/watch to match the new version numbers with prepended "v".
+  * Import upstream version 3.0.2.
+    + Update debian/upstream/metadata for renamed upstream git repository.
+    + Refresh sole patch. (Needed manual addition of some hunks.)
+    + Also patch t/00-load.t (don't look for blib under $AUTOPKGTEST_TMP)
+    + Add testsuite build-dependencies on sensible-utils, less + perl-doc.
+  * Declare compliance with Debian Policy 4.4.0. (No changes needed.)
+  * Add debian/NEWS entry for incompatibilities between ack 2 and 3.
+  * Upload to unstable again.
+
+ -- Axel Beckert <abe@debian.org>  Mon, 29 Jul 2019 02:14:49 +0200
+
+ack (2.28-1) experimental; urgency=low
+
+  * Import new upstream release 2.28.
+    + Refresh sole patch.
+  * Switch from maintainer scripts to debian/ack.maintscript.
+  * Declare compliance with Debian Policy 4.3.0. (No changes needed.)
+  * Bump debhelper compatibility level to 12.
+    + Use b-d on "debhelper-compat (= 12)" and drop debian/compat.
+  * Upload to experimental due to the Buster freeze.
+
+ -- Axel Beckert <abe@debian.org>  Mon, 08 Apr 2019 23:55:51 +0200
+
+ack (2.24-1) unstable; urgency=low
+
+  [ Salvatore Bonaccorso ]
+  * Update Vcs-* headers for switch to salsa.debian.org
+
+  [ Axel Beckert ]
+  * Import upstream version 2.24.
+    + Refresh sole patch.
+  * Declare compliance with Debian Policy 4.1.4. (No changes needed.)
+  * Finally drop transitional package ack-grep.
+    + Drop debian/ack.install, too. (No more needed and now causes FTBFS.)
+
+ -- Axel Beckert <abe@debian.org>  Wed, 27 Jun 2018 02:56:18 +0200
+
+ack (2.22-1) unstable; urgency=medium
+
+  * New upstream release.
+    + Refresh sole patch.
+  * Declare compliance with Debian Policy 4.1.3. (No changes needed.)
+  * Bump debhelper compatibility level to 11.
+    + Update versioned debhelper build-dependency accordingly.
+  * Remove "-b debian-stretch" from Vcs-Git header. (Obsolete since
+    package version 2.15.03-1.)
+
+ -- Axel Beckert <abe@debian.org>  Sat, 30 Dec 2017 06:22:51 +0100
+
+ack (2.20-1) unstable; urgency=medium
+
+  * New upstream release.
+    + Refresh sole patch.
+
+ -- Axel Beckert <abe@debian.org>  Tue, 12 Dec 2017 03:29:52 +0100
+
+ack (2.19.01-1) unstable; urgency=low
+
+  * New upstream release candidate.
+    + Fixes #883293 upstream.
+    + Update debian/copyright wrt. to public domain texts now used as
+      texts for the test suite.
+    + Drop repack instructions from debian/watch, but keep Files-Excluded
+      header in debian/copyright so that lintian warns us if those
+      non-free files show up by accident again.
+    + No more skip any tests.
+    + Refresh sole patch.
+    + Drop debian/ack.lintian-overrides, no more needed.
+  * Update GitHub URLs in debian/upstream/metadata from
+    …/petdance/ack2 to …/beyondgrep/ack2.
+
+ -- Axel Beckert <abe@debian.org>  Sat, 09 Dec 2017 03:19:15 +0100
+
+ack (2.18+dfsg-1) unstable; urgency=high
+
+  * Adapt debian/{watch,copyright} to exclude non-free song texts from
+    upstream test suite and repack the upstream tarball. (Closes: #883293)
+    + Temporarily override dh_auto_test to only run those test which don't
+      require the non-free text files.
+    + Add file debian/tests/pkg-perl/smoke-skip which lists all tests
+      which require the non-free text files.
+  * Declare compliance with Debian Policy 4.1.2.
+    + Change priority of transitional package to optional.
+  * Set "Rules-Requires-Root: no".
+  * Switch all upstream URLs in packaging to HTTPS. Thanks DUCK!
+  * Add a comment to debian/control that we want to keep the transitional
+    package until Ubuntu 18.04 LTS is out.
+
+ -- Axel Beckert <abe@debian.org>  Fri, 01 Dec 2017 21:55:34 +0100
+
+ack (2.18-2) unstable; urgency=low
+
+  * Upload to unstable again.
+  * Add lintian override for "DIRECTORYs" as this is misspelled on
+    purpose.
+
+ -- Axel Beckert <abe@debian.org>  Sun, 18 Jun 2017 23:04:16 +0200
+
+ack (2.18-1) experimental; urgency=low
+
+  * Import new upstream release 2.18.
+    + No more emits a perl warning when run from a deleted
+      directory. (Closes: #781338)
+    + Refresh sole patch.
+
+ -- Axel Beckert <abe@debian.org>  Sat, 25 Mar 2017 13:08:51 +0100
+
+ack (2.16-1) experimental; urgency=low
+
+  * Import new upstream release 2.16.
+
+ -- Axel Beckert <abe@debian.org>  Fri, 17 Mar 2017 00:18:59 +0100
+
+ack (2.15.03-1) experimental; urgency=low
+
+  [ Axel Beckert ]
+  * Merge changes from Debian Stretch.
+  * Import new upstream development release (labeled "2.15_03" upstream)
+    + Refresh sole patch.
+  * Re-enable running test suite at build time.
+  * Add t/ directory to debian/tests/pkg-perl/smoke-files to actually run
+    the run-time tests during autopkgtest.
+  * Update no-standalone-test-but-autopkgtests.patch to use
+    $AUTOPKGTEST_TMP instead of $ADTTMP.
+
+ -- Axel Beckert <abe@debian.org>  Sun, 05 Mar 2017 21:01:20 +0100
+
+ack (2.14-5) unstable; urgency=low
+
+  [ Axel Beckert ]
+  * Take all pure-packaging changes from Debian experimental.
+  * Rename source and binary packages from ack-grep to ack.
+  * Drop symbolic links from ack-grep to ack.
+  * Temporarily switch branch name in Vcs-Git.
+  * Bump debhelper compatibility to 10.
+  * Declare compliance with Debian Policy 3.9.8.
+
+  [ gregor herrmann ]
+  * Rename autopkgtest configuration file(s) as per new pkg-perl-
+    autopkgtest schema.
+  * debian/copyright: change Copyright-Format 1.0 URL to HTTPS.
+  * debian/upstream/metadata: use HTTPS for GitHub URLs.
+  * Remove Ryan Niebur from Uploaders. Thanks for your work!
+
+  [ Salvatore Bonaccorso ]
+  * debian/control: Use HTTPS transport protocol for Vcs-Git URI
+
+ -- Axel Beckert <abe@debian.org>  Sun, 11 Dec 2016 20:25:40 +0100
+
+ack (2.15.01-2) experimental; urgency=low
+
+  * Rename source and binary packages from ack-grep to ack.
+  * Add a transitional package ack-grep.
+  * Drop symbolic links from ack-grep to ack.
+
+ -- Axel Beckert <abe@debian.org>  Sat, 16 May 2015 02:21:57 +0200
+
+ack-grep (2.15.01-1) experimental; urgency=low
+
+  * New upstream development release (labeled "2.15_01" upstream)
+    + Drop cherry-picked patch.
+    + Refresh remaining patch.
+
+ -- Axel Beckert <abe@debian.org>  Sun, 15 Feb 2015 01:49:33 +0100
+
+ack-grep (2.14-4) unstable; urgency=low
+
+  * Cherry-pick 17504aa from upstream. Fixes wrong results with
+    -l. (Closes: #760870)
+  * Fix pkg-perl-specific lintian warning missing-testsuite-header.
+
+ -- Axel Beckert <abe@debian.org>  Thu, 09 Oct 2014 01:18:09 +0200
+
+ack-grep (2.14-3) unstable; urgency=medium
+
+  * Update no-standalone-test-but-autopkgtests.patch: Mark
+    t/lib/00-coverage.t as only for release testing
+  * Add libio-pty-perl as build-dependency to be able to run more tests.
+  * List test-pager as necessary file for DEP8 pkg-perl tests.
+  * Bumping Standards-Version to 3.9.6 (no changes)
+
+ -- Axel Beckert <abe@debian.org>  Wed, 17 Sep 2014 21:05:27 +0200
+
+ack-grep (2.14-2) unstable; urgency=medium
+
+  * Misuse the environment variable ACK_TEST_STANDALONE of ack's test
+    suite to switch between build- and installed-time (autopkgtest) tests.
+
+ -- Axel Beckert <abe@debian.org>  Sun, 14 Sep 2014 11:49:04 +0200
+
+ack-grep (2.14-1) unstable; urgency=medium
+
+  * New upstream release
+
+  [ gregor herrmann ]
+  * Strip trailing slash from metacpan URLs.
+
+  [ Axel Beckert ]
+  * Add a debian/upstream/metadata file according to DEP-12.
+  * Update package description to follow upstream's wording.
+
+  [ Salvatore Bonaccorso ]
+  * Update Vcs-Browser URL to cgit web frontend
+
+ -- Axel Beckert <abe@debian.org>  Thu, 04 Sep 2014 11:59:10 +0200
+
+ack-grep (2.12-2) unstable; urgency=low
+
+  * Add CVE-ID to previous changelog entry.
+  * debian/rules: More verbose explanation about handling dh_auto_test
+  * Drop patch app-rename, no more needed (c.f. #662114)
+    + Add Conflicts and Replaces against ack.
+    + Remove dh_auto_install override from debian/rules
+    + Add backward compatibility links and a debian/NEWS entry
+
+ -- Axel Beckert <abe@debian.org>  Mon, 24 Feb 2014 17:48:36 +0100
+
+ack-grep (2.12-1) unstable; urgency=high
+
+  * New upstream security fix release
+    + Disables --pager,--output and --regexp in per project .ackrc files.
+      Closes: #731848, CVE-2013-7069
+    + Refresh patch app-rename.
+  * Bump Standards-Version to 3.9.5 (no changes).
+
+ -- Axel Beckert <abe@debian.org>  Tue, 10 Dec 2013 21:36:18 +0100
+
+ack-grep (2.10-1) unstable; urgency=low
+
+  * New upstream release
+    + Refresh patch
+  * Change homepage header again, this time to http://beyondgrep.com/
+
+ -- Axel Beckert <abe@debian.org>  Thu, 26 Sep 2013 00:01:56 +0200
+
+ack-grep (2.08-1) unstable; urgency=low
+
+  * New upstream release
+    + ACK_PAGER + ACK_PAGER_COLOR now work as advertised (Closes: #709367)
+    + Removed debian/patches/spelling.patch, fixed upstream.
+    + Refresh debian/patches/app-rename
+  * Add ack-standalone to debian/clean
+  + Add myself to Uploaders
+
+ -- Axel Beckert <abe@debian.org>  Wed, 28 Aug 2013 22:58:34 +0200
+
+ack-grep (2.04-2) unstable; urgency=low
+
+  * Team upload.
+  * Remove obsolete conffile /etc/bash_completion.d/ack-grep. Thanks to
+    Jakub Wilk for pointing out the mistake.
+
+ -- gregor herrmann <gregoa@debian.org>  Sun, 12 May 2013 23:54:34 +0200
+
+ack-grep (2.04-1) unstable; urgency=low
+
+  * Team upload.
+
+  [ gregor herrmann ]
+  * debian/control: update {versioned,alternative} (build) dependencies.
+
+  [ Salvatore Bonaccorso ]
+  * Change search.cpan.org based URIs to metacpan.org based URIs
+
+  [ Axel Beckert ]
+  * Set homepage to http://betterthangrep.com/
+
+  [ gregor herrmann ]
+  * New upstream release. Closes: #706125 ("new major upstream version")
+  * bash-completion script is removed upstream. Drop patch, and bash-
+    completion parts in debian/rules and debian/control.
+    (Closes: #696466, #697207)
+  * The split between ack and ack-base is gone.
+    Drop patch, update debian/rules.
+  * Refresh patch app-rename.
+  * Remove debian/clean, simplify clean actions in debian/rules.
+  * Drop patch remove-incorrect-documentation
+    (hopefully not needed anymore).
+  * Add new patch to fix some spelling mistakes in the POD.
+  * Update upstream and packaging copyright/license information.
+  * Bump debhelper compatibility level to 8.
+  * Set Standards-Version to 3.9.4 (no changes).
+  * Update Vcs-Git filed.
+  * Add debian/NEWS pointing to major changes in ack2.
+  * Update build/runtime dependencies.
+
+ -- gregor herrmann <gregoa@debian.org>  Sat, 11 May 2013 19:42:48 +0200
+
+ack-grep (1.96-2) unstable; urgency=low
+
+  * Remove unnecessary README.source
+  * Fix manpage patch documenting stdin behavior (Closes: #676235)
+    - Move the ack-base manpage substitution to dh_auto_install
+      to ensure it will happen
+
+ -- Ryan Niebur <ryan@debian.org>  Fri, 08 Jun 2012 19:09:10 -0700
+
+ack-grep (1.96-1) unstable; urgency=low
+
+  * New Upstream Release (Closes: #636858)
+    - fixes bash completion spacing (Closes: #562519)
+  * Update to copyright format 1.0
+    - Fix copyright file to reference GPL-1 instead of GPL symlink
+    - Update copyright information
+  * Update policy version to 3.9.3
+  * Refresh patches
+    - add DEP3 patch tags
+  * add patch to fix bash completion
+  * Transfer maintenance into Debian Perl Group and update Maintainer /
+    Vcs-* fields to reflect that
+  * Remove quilt from build deps and use source format 3.0 quilt
+  * Fix rename patch to allow displaying the original program name in
+    --help and --version output when the user has created an ack symlink
+    (Closes: #631208)
+  * Remove incorrect information about using - for stdin (Closes: #593904)
+    - Fix the ACK-BASE title in the manpage to say ACK-GREP
+
+ -- Ryan Niebur <ryan@debian.org>  Sun, 03 Jun 2012 22:48:02 -0700
+
+ack-grep (1.92-1) unstable; urgency=low
+
+  * change section to utils to match the override
+  * New Upstream Version
+  * refresh/improve some patches
+  * remove patches fixed upstream
+
+ -- Ryan Niebur <ryan@debian.org>  Thu, 24 Dec 2009 20:54:35 -0800
+
+ack-grep (1.90-2) unstable; urgency=low
+
+  * fix logic when deciding whether to run the pager or not (Closes:
+    #554459)
+  * update my email address
+
+ -- Ryan Niebur <ryan@debian.org>  Sat, 07 Nov 2009 10:28:56 -0800
+
+ack-grep (1.90-1) unstable; urgency=low
+
+  * add missing full stop in long description, thanks to Enrico Zini for
+    spotting
+  * don't show dev versions in watch file
+  * add DMUA field
+  * New Upstream Version
+  * refresh patches, removing the bash completion ones (fixed upstream)
+  * cleanup d/rules
+  * set Standards-Version to 3.8.3
+  * don't test with ack-base, that's broken
+
+ -- Ryan Niebur <ryanryan52@gmail.com>  Mon, 07 Sep 2009 23:29:56 -0700
+
+ack-grep (1.88-1) unstable; urgency=low
+
+  * New Upstream Version (Closes: #504071)
+  * s/.cvs/CVS/ in the long description (Closes: #512137)
+  * adopt package (Closes: #516778)
+  * add my Vcs-* headers
+  * debhelper 7
+  * quilt, redo patches from scratch
+  * run the test (if possible), improved testing
+  * bump standards version to 3.8.1
+  * machine readable copyright format
+  * add newer version of etc/ack.bash_completion.sh that supports
+    Debian's name for ack
+  * install the bash completion
+  * add README.source
+  * remove cdbs and patchutils from build deps
+  * make short Description pass the is a test
+  * add about highlighting to long description, as that is another very
+    useful default feature
+
+ -- Ryan Niebur <ryanryan52@gmail.com>  Tue, 17 Mar 2009 17:19:44 -0700
+
+ack-grep (1.80-1) unstable; urgency=low
+
+  * New upstream (Closes: #469956)
+
+ -- Peter Makholm <peter@makholm.net>  Sat, 05 Apr 2008 10:08:27 +0000
+
+ack-grep (1.76-1) unstable; urgency=low
+
+  * New upstream
+    - Don't depend on filesystem order for tests (Closes: #451403)
+  * Add dependency on perl-doc (Closes: #462320)
+    - I believe this to be the least intrusive of the suggested
+      fixes. If anybody is interested in having ack-grep installed
+      without perl-doc installed please reopen this bug or report a
+      whishlist bug.
+  * Bump standards-version (no changes)
+  * Exclude some test files from being cleaned by dh_clean
+
+ -- Peter Makholm <peter@makholm.net>  Fri, 25 Jan 2008 16:13:25 +0000
+
+ack-grep (1.72-1) unstable; urgency=low
+
+  * New upstream release
+    - Now recognizes .cc as C++ file extension (Closes: 447853)
+
+ -- Peter Makholm <peter@makholm.net>  Mon, 12 Nov 2007 07:34:40 +0000
+
+ack-grep (1.70-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Peter Makholm <peter@makholm.net>  Mon, 05 Nov 2007 17:10:21 +0000
+
+ack-grep (1.68-2) unstable; urgency=low
+
+  * Add build dependency on libfile-next-perl (Closes: #447456)
+
+ -- Peter Makholm <peter@makholm.net>  Tue, 23 Oct 2007 04:17:38 +0000
+
+ack-grep (1.68-1) unstable; urgency=low
+
+  * New upstream
+  * Do not build ack-standalone (cleans the diff)
+  * Now maintained with Subversion on collab-maint.alioth.debian.org
+  * Added Vcs-* and Homepage fields to control file
+
+ -- Peter Makholm <peter@makholm.net>  Wed, 17 Oct 2007 15:51:21 +0000
+
+ack-grep (1.66-1) unstable; urgency=low
+
+  * Initial Release (closes: #436101).
+
+ -- Peter Makholm <peter@makholm.net>  Sun, 07 Oct 2007 13:44:43 +0000

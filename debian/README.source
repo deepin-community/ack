@@ -1,0 +1,26 @@
+Hacks in the packaging of ack for Debian
+========================================
+
+Upstream generates two variants of the script `ack`: One which uses
+locally installed Perl modules and a "standalone" variant which is
+more or less a portable, fat-packed version of the ack script with all
+required Perl modules embedded in the script.
+
+On Debian we only need the normal variant.
+
+The test suite also runs against both variants. And in Debian we have
+the need for two variants of the test suite, too: One for build-time
+testing and one for as-installed (autopkgtest) testing.
+
+So we reuse upstream's $ACK_TEST_STANDALONE switch by replacing it
+with $AUTOPKGTEST_TMP (which is always set during autopkgtest runs) to
+implement a switch which switches between the just built `ack` in the
+current directory and the installed /usr/bin/ack.
+
+See debian/patches/no-standalone-test-but-autopkgtests.patch for details.
+
+This also means that this patch needs to be expanded _manually_ every
+time upstream adds new tests (or at least when new test files were
+added).
+
+ -- Axel Beckert <abe@debian.org>, Sat, 22 Feb 2020 15:25:46 +0100
