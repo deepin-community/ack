@@ -1,0 +1,13 @@
+# These files are no more included, but since they are an obvious
+# copyright violation (see #883293) these file exclusion rules are
+# kept to make sure they never get included in the Debian archive even
+# if they pop up upstream again. See also the changelog entry for
+# 2.19.01-1.
+
+ack source: repackaged-source-not-advertised
+
+# False positive (51 bytes length) due to it's name which is used to
+# check if ack skips that file.
+
+ack source: source-is-missing [t/swamp/minified.min.js]
+ack source: source-contains-prebuilt-javascript-object [t/swamp/minified.min.js]

@@ -1,0 +1,60 @@
+ack (3.0.2-1) unstable; urgency=low
+
+  From upstream Changes:
+
+  ack 3 no longer highlights capture groups.
+  ------------------------------------------
+
+  ack 2 would highlight your capture groups.  For example,
+
+    ack '(set|get)_foo_(name|id)'
+
+  would highlight the `set` or `get`, and the `name` or `id`, but not the
+  full `set_user_id` that was matched.
+
+  This feature was too confusing and has been removed.  Now, the entire
+  matching string is highlighted.
+
+  ack 3's --output allows fewer special variables
+  -----------------------------------------------
+
+  In ack 2, you could put any kind of Perl code in the `--output`
+  option and it would get `eval`uated at run time, which would let
+  you do tricky stuff like this gem from Mark Fowler
+  (http://www.perladvent.org/2014/2014-12-21.html):
+
+    ack --output='$&: @{[ eval "use LWP::Simple; 1" && length LWP::Simple::get($&) ]} bytes' \
+                    'https?://\S+' list.txt
+    http://google.com/: 19529 bytes
+    http://metacpan.org/: 7560 bytes
+    http://www.perladvent.org/: 5562 bytes
+
+  This has been a security problem in the past, and so in ack 3 we
+  no longer `eval` the contents of `--output`.  You're now restricted
+  to the following variables: `$1` thru `$9`, `$_`, `$.`, `$&`, ``$` ``,
+  `$'` and `$+`.  You can also embed `\t`, `\n` and `\r` ,
+  and `$f` as stand-in for `$filename` in `ack2 --output` .
+
+ -- Axel Beckert <abe@debian.org>  Wed, 24 Jul 2019 23:48:40 +0200
+
+ack-grep (2.12-2) unstable; urgency=low
+
+  The program "ack" is no more renamed to "ack-grep" since the conflicting
+  "ack", a Kanji code converter, has been removed from Debian (see #662114).
+
+  For a transitional phase of one Debian release, the package will though
+  contain symlinks from ack-grep to ack for backwards compatibility.
+
+ -- Axel Beckert <abe@debian.org>  Mon, 17 Feb 2014 18:03:56 +0100
+
+ack-grep (2.04-1) unstable; urgency=low
+
+  From upstream Changes:  
+
+  ack 2 makes some big changes in its behaviors that could trip up
+  users who are used to the idiosyncracies of ack 1.x.  These changes
+  could affect your searching happiness, so please read them.
+
+  Read the full list in /usr/share/doc/ack-grep/changelog.gz.
+
+ -- gregor herrmann <gregoa@debian.org>  Sat, 11 May 2013 18:38:48 +0200
